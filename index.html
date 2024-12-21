@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог товаров</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Каталог товаров</h1>
+            <div class="search-container">
+                <img src="images/free-icon-magnifier-2866321.png" alt="Иконка поиска" class="search-icon" onclick="toggleSearchBar()">
+                <div class="search-bar" id="searchBar">
+                    <input type="text" id="searchInput" placeholder="Поиск..." oninput="filterProducts()">
+                </div>
+            </div>
+        </div>
+        <div class="catalog" id="catalog">
+            <!-- Карточки товаров -->
+            <div class="card" data-name="футболка мужская" onclick="openModal('Футболка мужская','Цвета в наличии: Красный, Синий', 'Размеры: S, M, L')">
+                <img src="images/b3up3o1psqm0nmn5qra7xe6cjrqcde08.jpg" alt="Футболка мужская">
+                <h2>Футболка мужская</h2>
+                <p>Артикул: 0001</p>
+            </div>
+            <div class="card" data-name="кроссовки беговые" onclick="openModal('Кроссовки беговые', 'Белый, Чёрный', '42, 43, 44')">
+                <img src="images/black.jpg" alt="Кроссовки беговые">
+                <h2>Кроссовки беговые</h2>
+                <p>Артикул: 0002</p>
+            </div>
+            <div class="card" data-name="футболка женская" onclick="openModal('Футболка женская', 'Розовый, Белый', 'S, M')">
+                <img src="images/6140.60_73_500.jpg" alt="Футболка женская">
+                <h2>Футболка женская</h2>
+                <p>Артикул: 0003</p>
+            </div>
+        </div>
+        <div class="footer">
+            <p>Свяжитесь с менеджером: <a href="tg://resolve?domain=manager_username">Написать в Telegram</a></p>
+        </div>
+    </div>
+
+    <!-- Модальное окно -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <h2 id="modalTitle"></h2>
+            <p id="description"></p>
+            <p id="modalColors"></p>
+            <p id="modalSizes"></p>
+            <button class="modal-close" onclick="closeModal()">Закрыть</button>
+        </div>
+    </div>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
