@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Тренировки</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+    }
+    .fade-enter {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    .fade-enter-active {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    #back-btn {
+      display: none;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 0.5rem;
+      margin-right: 0.5rem;
+      border-radius: 0.375rem;
+      transition: background-color 0.3s ease;
+    }
+    #back-btn:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    /* Стили для модального окна */
+    #welcome-modal {
+      display: flex;
+    }
+    #welcome-modal.hidden {
+      display: none;
+    }
+    #profile-form input {
+      background-color: #27272a;
+      color: #ffffff;
+      border: 1px solid #4b5563;
+      transition: border-color 0.3s ease;
+    }
+    #profile-form input:focus {
+      border-color: #e11d48;
+    }
+    #profile-form button {
+      background-color: #e11d48;
+      transition: background-color 0.3s ease;
+    }
+    #profile-form button:hover {
+      background-color: #be123c;
+    }
+  </style>
+</head>
+<body class="bg-black text-white min-h-screen flex flex-col">
+  <!-- Модальное окно -->
+  <div id="welcome-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+    <div class="bg-zinc-900 p-6 rounded-xl w-full max-w-md text-white">
+      <h2 class="text-2xl font-bold mb-4">Добро пожаловать!</h2>
+      <p class="text-gray-400 mb-4">Пожалуйста, заполните данные для начала работы:</p>
+      <form id="profile-form" class="flex flex-col gap-4">
+        <div>
+          <label for="name" class="block text-sm font-semibold mb-1">Имя</label>
+          <input type="text" id="name" name="name" class="w-full px-3 py-2 bg-zinc-800 text-white rounded-lg border border-zinc-700 focus:outline-none focus:border-rose-600" required />
+        </div>
+        <div>
+          <label for="height" class="block text-sm font-semibold mb-1">Рост (см)</label>
+          <input type="number" id="height" name="height" class="w-full px-3 py-2 bg-zinc-800 text-white rounded-lg border border-zinc-700 focus:outline-none focus:border-rose-600" required />
+        </div>
+        <div>
+          <label for="weight" class="block text-sm font-semibold mb-1">Вес (кг)</label>
+          <input type="number" id="weight" name="weight" class="w-full px-3 py-2 bg-zinc-800 text-white rounded-lg border border-zinc-700 focus:outline-none focus:border-rose-600" required />
+        </div>
+        <div>
+          <label for="goal" class="block text-sm font-semibold mb-1">Цель</label>
+          <input type="text" id="goal" name="goal" class="w-full px-3 py-2 bg-zinc-800 text-white rounded-lg border border-zinc-700 focus:outline-none focus:border-rose-600" required />
+        </div>
+        <button type="submit" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-lg">
+          Сохранить
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Заголовок с кнопкой "Назад" -->
+  <header class="fixed top-0 left-0 w-full bg-zinc-900 flex items-center py-2 px-4 border-b border-zinc-800 z-50">
+    <button id="back-btn" onclick="goBack()" class="text-white text-lg hidden">←</button>
+    <h1 id="page-title" class="text-lg font-bold ml-4">Главная</h1>
+  </header>
+
+  <!-- Навигация -->
+  <nav class="fixed bottom-0 left-0 w-full bg-zinc-900 flex justify-around items-center py-3 border-t border-zinc-800 z-50">
+    <button class="text-white flex flex-col items-center text-xs" onclick="showPage('home')">
+      <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7m-9 2v6m-4 4h14a2 2 0 002-2v-5a2 2 0 00-2-2H5a2 2 0 00-2 2v5a2 2 0 002 2z"></path></svg>
+      Главное
+    </button>
+    <button class="text-white flex flex-col items-center text-xs" onclick="showPage('favorites')">
+      <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 15l7-7 7 7"></path></svg>
+      Избранное
+    </button>
+    <button class="text-white flex flex-col items-center text-xs" onclick="showPage('profile')">
+      <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+      Профиль
+    </button>
+  </nav>
+
+  <!-- Главная страница -->
+  <main id="home" class="flex-1 px-4 pt-16 pb-20 hidden">
+    <h1 class="text-2xl font-bold mb-4">Группы мышц</h1>
+    <div class="grid grid-cols-2 gap-4">
+      <button class="relative group aspect-square bg-zinc-800 rounded-xl overflow-hidden" onclick="openMuscleGroups('Грудь')">
+        <img src="img/grud.jpg" class="object-cover w-full h-full opacity-70 group-hover:opacity-90 transition-all" />
+        <span class="absolute bottom-2 left-2 text-white text-lg font-semibold">Грудь</span>
+      </button>
+      <button class="relative group aspect-square bg-zinc-800 rounded-xl overflow-hidden" onclick="openMuscleGroups('Руки')">
+        <img src="img/ruki.jpg" class="object-cover w-full h-full opacity-70 group-hover:opacity-90 transition-all" />
+        <span class="absolute bottom-2 left-2 text-white text-lg font-semibold">Руки</span>
+      </button>
+      <button class="relative group aspect-square bg-zinc-800 rounded-xl overflow-hidden" onclick="openMuscleGroups('Спина')">
+        <img src="img/spina.jpg" class="object-cover w-full h-full opacity-70 group-hover:opacity-90 transition-all" />
+        <span class="absolute bottom-2 left-2 text-white text-lg font-semibold">Спина</span>
+      </button>
+      <button class="relative group aspect-square bg-zinc-800 rounded-xl overflow-hidden" onclick="openMuscleGroups('Пресс')">
+        <img src="img/press.jpg" class="object-cover w-full h-full opacity-70 group-hover:opacity-90 transition-all" />
+        <span class="absolute bottom-2 left-2 text-white text-lg font-semibold">Пресс</span>
+      </button>
+      <button class="relative group aspect-square bg-zinc-800 rounded-xl overflow-hidden" onclick="openMuscleGroups('Ноги')">
+        <img src="img/nogi.jpg" class="object-cover w-full h-full opacity-70 group-hover:opacity-90 transition-all" />
+        <span class="absolute bottom-2 left-2 text-white text-lg font-semibold">Ноги</span>
+      </button>
+      <button class="relative group aspect-square bg-zinc-800 rounded-xl overflow-hidden" onclick="openMuscleGroups('Плечи')">
+        <img src="img/plechi.jpg" class="object-cover w-full h-full opacity-70 group-hover:opacity-90 transition-all" />
+        <span class="absolute bottom-2 left-2 text-white text-lg font-semibold">Плечи</span>
+      </button>
+    </div>
+  </main>
+
+  <!-- Страница с мышцами -->
+  <main id="muscle-group-list" class="flex-1 px-4 pt-16 pb-20 hidden">
+    <h1 id="muscle-group-title" class="text-2xl font-bold mb-4"></h1>
+    <div id="muscle-grid" class="flex flex-col gap-4"></div>
+  </main>
+
+  <!-- Страница с упражнениями -->
+  <main id="exercise-list" class="flex-1 px-4 pt-16 pb-20 hidden">
+    <h1 id="exercise-group-title" class="text-2xl font-bold mb-4"></h1>
+    <div id="exercise-grid" class="flex flex-col gap-4"></div>
+  </main>
+
+  <!-- Страница упражнения -->
+  <main id="exercise-detail" class="flex-1 px-4 pt-16 pb-20 hidden">
+    <h1 id="exercise-title" class="text-2xl font-bold mb-2"></h1>
+    <p id="exercise-description" class="text-gray-400 mb-2"></p>
+    <h2 class="text-xl font-semibold mt-4 mb-1">Как выполнять</h2>
+    <ol id="exercise-how-to" class="list-decimal pl-6 mb-3"></ol>
+    <h2 class="text-xl font-semibold mb-1">Мышцы, задействованные</h2>
+    <p id="exercise-muscles" class="mb-3"></p>
+    <h2 class="text-xl font-semibold mb-1">Советы</h2>
+    <ul id="exercise-tips" class="list-disc pl-6 mb-4"></ul>
+    <button id="favorite-btn" onclick="toggleFavorite()" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-xl">Добавить в избранное</button>
+  </main>
+
+  <!-- Избранное -->
+  <main id="favorites" class="flex-1 px-4 pt-16 pb-20 hidden">
+    <h1 class="text-2xl font-bold mb-4">Избранное</h1>
+    <div id="favorites-list" class="flex flex-col gap-4"></div>
+  </main>
+
+  <!-- Страница профиля -->
+  <main id="profile" class="flex-1 px-4 pt-16 pb-20 hidden">
+    <div class="flex items-center justify-center flex-col mb-8">
+      <div class="w-32 h-32 rounded-full bg-zinc-800 overflow-hidden flex items-center justify-center mb-4">
+        <img src="img/fag.jpg" alt="Avatar" class="w-full h-full object-cover" />
+      </div>
+      <h1 id="profile-name" class="text-2xl font-bold text-white">Имя не указано</h1>
+    </div>
+    <div class="bg-zinc-800 p-6 rounded-xl">
+      <div class="flex justify-between items-center mb-4">
+        <span class="text-gray-400 font-semibold">Вес</span>
+        <span id="profile-weight" class="text-white font-semibold">Не указано</span>
+      </div>
+      <div class="flex justify-between items-center mb-4">
+        <span class="text-gray-400 font-semibold">Рост</span>
+        <span id="profile-height" class="text-white font-semibold">Не указано</span>
+      </div>
+      <div class="flex justify-between items-center mb-4">
+        <span class="text-gray-400 font-semibold">Цель</span>
+        <span id="profile-goal" class="text-white font-semibold">Не указано</span>
+      </div>
+      <button id="edit-profile-btn" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-xl w-full">
+        Редактировать профиль
+      </button>
+    </div>
+  </main>
+
+  <script>
+    const sampleExercises = {
+      'Грудь': {
+        muscles: ['Грудные мышцы'],
+        exercises: [
+          {
+            title: 'Жим лёжа',
+            description: 'Базовое упражнение для развития грудных мышц.',
+            howTo: ['Лягте на скамью.', 'Опустите штангу до груди.', 'Поднимите штангу вверх.'],
+            muscles: 'Грудные мышцы',
+            tips: ['Контролируйте дыхание.', 'Держите спину ровно.']
+          }
+        ]
+      },
+      'Руки': {
+        muscles: ['Бицепсы', 'Трицепсы'],
+        exercises: [
+          {
+            title: 'Подъемы штанги на бицепс',
+            description: 'Упражнение для развития бицепсов.',
+            howTo: ['Держите штангу на уровне бедра.', 'Поднимайте штангу к плечам.'],
+            muscles: 'Бицепсы',
+            tips: ['Не раскачивайте корпус.']
+          },
+          {
+            title: 'Французский жим',
+            description: 'Упражнение для развития трицепсов.',
+            howTo: ['Лягте на скамью.', 'Держите гантель над головой.', 'Опускайте гантель за голову.', 'Верните гантель в исходное положение.'],
+            muscles: 'Трицепсы',
+            tips: ['Следите за локтями, чтобы они не расходились в стороны.']
+          }
+        ],
+      }
+    };
+
+    let currentExercise = null;
+    const favorites = new Set();
+    let pageHistory = [];
+    let profileData = {
+      name: localStorage.getItem('profileName') || 'Имя не указано',
+      weight: localStorage.getItem('profileWeight') || 'Не указано',
+      height: localStorage.getItem('profileHeight') || 'Не указано',
+      goal: localStorage.getItem('profileGoal') || 'Не указано'
+    };
+
+    window.onload = () => {
+      const savedProfile = localStorage.getItem('profile');
+      if (!savedProfile) {
+        document.getElementById('welcome-modal').classList.remove('hidden');
+      } else {
+        const profile = JSON.parse(savedProfile);
+        profileData.name = profile.name;
+        profileData.height = profile.height;
+        profileData.weight = profile.weight;
+        profileData.goal = profile.goal;
+        updateProfile();
+        showPage('home');
+      }
+    };
+
+    document.getElementById('profile-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const height = document.getElementById('height').value.trim();
+      const weight = document.getElementById('weight').value.trim();
+      const goal = document.getElementById('goal').value.trim();
+
+      if (!name || !height || !weight || !goal) {
+        alert('Пожалуйста, заполните все поля.');
+        return;
+      }
+
+      const profile = {
+        name,
+        height,
+        weight,
+        goal
+      };
+      localStorage.setItem('profile', JSON.stringify(profile));
+
+      profileData.name = name;
+      profileData.height = height;
+      profileData.weight = weight;
+      profileData.goal = goal;
+      updateProfile();
+
+      document.getElementById('welcome-modal').classList.add('hidden');
+      showPage('home');
+    });
+
+    function showPage(pageId) {
+      if (pageHistory[pageHistory.length - 1] !== pageId) {
+        pageHistory.push(pageId);
+      }
+
+      ['home', 'favorites', 'muscle-group-list', 'exercise-list', 'exercise-detail', 'profile'].forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+      });
+      document.getElementById(pageId).classList.remove('hidden');
+
+      updateBackButton();
+      updatePageTitle(pageId);
+    }
+
+    function goBack() {
+      if (pageHistory.length > 1) {
+        pageHistory.pop();
+        const previousPage = pageHistory[pageHistory.length - 1];
+        showPage(previousPage);
+      }
+    }
+
+    function updateBackButton() {
+      const backButton = document.getElementById('back-btn');
+      backButton.style.display = (pageHistory.length > 1) ? 'block' : 'none';
+    }
+
+    function updatePageTitle(pageId) {
+      const titles = {
+        home: 'Главная',
+        'muscle-group-list': 'Группы мышц',
+        'exercise-list': 'Упражнения',
+        'exercise-detail': 'Детали упражнения',
+        favorites: 'Избранное',
+        profile: 'Мой профиль'
+      };
+      document.getElementById('page-title').textContent = titles[pageId] || 'Главная';
+    }
+
+    function openMuscleGroups(group) {
+      const muscleGroupTitle = document.getElementById('muscle-group-title');
+      muscleGroupTitle.textContent = `Мышцы группы ${group}`;
+      const muscleGrid = document.getElementById('muscle-grid');
+      muscleGrid.innerHTML = '';
+      const muscles = sampleExercises[group]?.muscles || [];
+      muscles.forEach(muscle => {
+        const btn = document.createElement('button');
+        btn.className = 'bg-zinc-800 rounded-xl px-4 py-4 text-left text-white font-semibold';
+        btn.textContent = muscle;
+        btn.onclick = () => openExercises(group, muscle);
+        muscleGrid.appendChild(btn);
+      });
+      showPage('muscle-group-list');
+    }
+
+    function openExercises(group, muscle) {
+      const exercises = sampleExercises[group]?.exercises || [];
+      const filteredExercises = exercises.filter(ex => ex.muscles.includes(muscle));
+      const grid = document.getElementById('exercise-grid');
+      grid.innerHTML = '';
+      document.getElementById('exercise-group-title').textContent = `${group} - ${muscle}`;
+      filteredExercises.forEach(ex => {
+        const btn = document.createElement('button');
+        btn.className = 'bg-zinc-800 rounded-xl px-4 py-4 text-left text-white font-semibold';
+        btn.textContent = ex.title;
+        btn.onclick = () => openExerciseDetail(ex);
+        grid.appendChild(btn);
+      });
+      showPage('exercise-list');
+    }
+
+    function openExerciseDetail(exercise) {
+      currentExercise = exercise;
+      document.getElementById('exercise-title').textContent = exercise.title;
+      document.getElementById('exercise-description').textContent = exercise.description;
+      const howToList = document.getElementById('exercise-how-to');
+      howToList.innerHTML = '';
+      exercise.howTo.forEach(step => {
+        const li = document.createElement('li');
+        li.textContent = step;
+        howToList.appendChild(li);
+      });
+      document.getElementById('exercise-muscles').textContent = exercise.muscles;
+      const tipsList = document.getElementById('exercise-tips');
+      tipsList.innerHTML = '';
+      exercise.tips.forEach(tip => {
+        const li = document.createElement('li');
+        li.textContent = tip;
+        tipsList.appendChild(li);
+      });
+      updateFavoriteButton();
+      showPage('exercise-detail');
+    }
+
+    function updateFavoriteButton() {
+      const btn = document.getElementById('favorite-btn');
+      if (favorites.has(currentExercise.title)) {
+        btn.textContent = 'В избранном';
+        btn.classList.remove('bg-rose-600');
+        btn.classList.add('bg-green-600');
+      } else {
+        btn.textContent = 'Добавить в избранное';
+        btn.classList.remove('bg-green-600');
+        btn.classList.add('bg-rose-600');
+      }
+    }
+
+    function toggleFavorite() {
+      if (!currentExercise) return;
+      if (favorites.has(currentExercise.title)) {
+        favorites.delete(currentExercise.title);
+      } else {
+        favorites.add(currentExercise.title);
+      }
+      updateFavoriteButton();
+    }
+
+    function updateFavoritesList() {
+      const list = document.getElementById('favorites-list');
+      list.innerHTML = '';
+      if (favorites.size === 0) {
+        const emptyMessage = document.createElement('p');
+        emptyMessage.className = 'text-gray-400 text-lg';
+        emptyMessage.textContent = 'Тут пусто';
+        list.appendChild(emptyMessage);
+        return;
+      }
+      favorites.forEach(title => {
+        const exercise = findExerciseByTitle(title);
+        if (!exercise) return;
+        const item = document.createElement('div');
+        item.className = 'flex justify-between items-center bg-zinc-800 p-4 rounded-xl';
+        const detailsBtn = document.createElement('button');
+        detailsBtn.className = 'text-white font-semibold';
+        detailsBtn.textContent = exercise.title;
+        detailsBtn.onclick = () => openExerciseDetail(exercise);
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'text-red-500 font-semibold';
+        deleteBtn.textContent = 'Удалить';
+        deleteBtn.onclick = () => {
+          favorites.delete(title);
+          updateFavoritesList();
+        };
+        item.appendChild(detailsBtn);
+        item.appendChild(deleteBtn);
+        list.appendChild(item);
+      });
+    }
+
+    function findExerciseByTitle(title) {
+      for (const group in sampleExercises) {
+        const exercise = sampleExercises[group].exercises.find(ex => ex.title === title);
+        if (exercise) return exercise;
+      }
+      return null;
+    }
+
+    function updateProfile() {
+      document.getElementById('profile-name').textContent = profileData.name;
+      document.getElementById('profile-weight').textContent = profileData.weight + ' кг';
+      document.getElementById('profile-height').textContent = profileData.height + ' см';
+      document.getElementById('profile-goal').textContent = profileData.goal;
+    }
+
+    document.getElementById('edit-profile-btn').addEventListener('click', () => {
+      const newName = prompt('Введите ваше имя:', profileData.name);
+      const newWeight = prompt('Введите ваш вес (кг):', profileData.weight);
+      const newHeight = prompt('Введите ваш рост (см):', profileData.height);
+      const newGoal = prompt('Введите вашу цель (например, "Набрать мышечную массу"):', profileData.goal);
+
+      if (newName !== null) profileData.name = newName;
+      if (newWeight !== null) profileData.weight = newWeight;
+      if (newHeight !== null) profileData.height = newHeight;
+      if (newGoal !== null) profileData.goal = newGoal;
+
+      localStorage.setItem('profileName', profileData.name);
+      localStorage.setItem('profileWeight', profileData.weight);
+      localStorage.setItem('profileHeight', profileData.height);
+      localStorage.setItem('profileGoal', profileData.goal);
+
+      updateProfile();
+    });
+  </script>
+</body>
+</html>
